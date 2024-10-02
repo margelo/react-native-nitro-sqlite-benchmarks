@@ -1,70 +1,211 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { QuickSQLite } from "react-native-quick-sqlite";
+import {
+  Benchmark,
+  BenchmarkId,
+  BenchmarkResult,
+  BenchmarkResults,
+  BenchmarkRunner,
+  BenchmarkRunnerResult,
+  BenchmarkRunnerResults,
+  BENCHMARKS,
+} from "@/constants/Benchmarks";
 
-export default function HomeScreen() {
+const wait = (ms: number) =>
+  new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+async function executeInSequence<Task, Result>(
+  tasks: Task[],
+  execute: (t: Task) => Promise<Result>,
+  pauseTime = 1000
+) {
+  const results: Result[] = [];
+  async function run(i = 0): Promise<void> {
+    await (i === 0 ? Promise.resolve() : wait(pauseTime));
+
+    const result = await execute(tasks[i]);
+    results.push(result);
+
+    if (tasks[i + 1] != null) return run(i + 1);
+  }
+
+  await run();
+  return results;
+}
+
+function executeBenchmarkRunner(
+  benchmark: Benchmark,
+  runner: BenchmarkRunner
+): BenchmarkRunnerResult {
+  console.log("Preparing benchmark for", runner.library);
+  runner.prepare?.();
+
+  console.log(
+    `Running benchmark ${benchmark.numberOfRuns}x times in ${runner.library}`
+  );
+  const start = performance.now();
+  for (let i = 0; i < benchmark.numberOfRuns; i++) runner.run(i);
+  const end = performance.now();
+  console.log(
+    `Finished running benchmark ${benchmark.numberOfRuns}x times in ${runner.library}`
+  );
+
+  const time = (end - start).toFixed(2);
+  console.log(`Took ${time}ms to run!`);
+  return { library: runner.library, time };
+}
+
+async function runBenchmark(benchmark: Benchmark): Promise<BenchmarkResult> {
+  console.log(`Starting "${benchmark.description}" benchmark`);
+  const results = await executeInSequence(
+    Object.values(benchmark.runners),
+    async (runner) => executeBenchmarkRunner(benchmark, runner)
+  );
+  console.log(`Finished "${benchmark.description}" benchmark`);
+
+  const runnerResults = Object.fromEntries(
+    results.map((result) => [result.library, result])
+  ) as BenchmarkRunnerResults;
+
+  return { id: benchmark.id, runnerResults };
+}
+
+async function runBenchmarks(
+  benchmarks: Benchmark[]
+): Promise<BenchmarkResults> {
+  console.log("--------- BEGINNING BENCHMARKS ---------");
+  const results = await executeInSequence(benchmarks, async (benchmark) =>
+    runBenchmark(benchmark)
+  );
+  console.log("--------- FINISHED SQLITE BENCHMARKS! ---------");
+
+  return Object.fromEntries(
+    results.map((result) => [result.id, result])
+  ) as BenchmarkResults;
+}
+
+export default function BenchmarkScreen() {
+  const [results, setResults] = useState<BenchmarkResults>();
+
+  const startBenchmarks = useCallback(() => {
+    runBenchmarks(BENCHMARKS).then((results) => {
+      setResults(results);
+    });
+  }, []);
+
+  const Results = useMemo(
+    () =>
+      BENCHMARKS.map(({ id, description }) => {
+        const runnerResults = results?.[id]?.runnerResults;
+
+        return (
+          <View style={{ paddingBottom: 10 }} key={id as string}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginRight: -20,
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  paddingRight: 5,
+                }}
+              >
+                {description}
+              </Text>
+
+              {runnerResults === null ? (
+                <ActivityIndicator />
+              ) : (
+                <View style={{ width: 20, height: 20 }} />
+              )}
+            </View>
+
+            {runnerResults != null &&
+              Object.values(runnerResults).map(({ library, time }) => (
+                <Text style={{ textAlign: "center" }}>
+                  Took{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    {library} took {time}ms
+                  </Text>
+                </Text>
+              ))}
+          </View>
+        );
+      }),
+    [results]
+  );
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <ScrollView contentContainerStyle={ScreenStyles.container}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginRight: -20,
+          marginBottom: 20,
+        }}
+      >
+        <TouchableOpacity
+          onPressIn={() => {
+            startBenchmarks();
+          }}
+          style={{ paddingRight: 10 }}
+        >
+          <Text style={ScreenStyles.buttonText}>Run benchmarks</Text>
+        </TouchableOpacity>
+
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <View style={{ width: 20, height: 20 }} />
+        )}
+      </View>
+
+      {Results}
+
+      <StatusBar style="auto" />
+    </ScrollView>
+    // <View style={styles.container}>
+    //   <Text style={{ fontWeight: "bold", size: 24 }}>
+    //     RNQuickSQLite vs RNNitroSQLite vs OP-SQLite
+    //   </Text>
+
+    //   <View style={{ height: 50 }} />
+
+    //   <Text style={{ fontWeight: "bold", size: 24 }}>
+    //     Loading 300k database
+    //   </Text>
+    //   <View style={{ alignItems: "flex-end" }}>
+    //     <Text>
+    //       ExpoModule.addNumbers(...) took{" "}
+    //       <Text style={{ fontWeight: "bold" }}>{results?.expoTime}ms</Text>
+    //     </Text>
+    //     <Text>
+    //       TurboModule.addNumbers(...) took{" "}
+    //       <Text style={{ fontWeight: "bold" }}>{results?.turboTime}ms</Text>
+    //     </Text>
+    //     <Text>
+    //       NitroModule.addNumbers(...) took{" "}
+    //       <Text style={{ fontWeight: "bold" }}>{results?.nitroTime}ms</Text>
+    //     </Text>
+    //   </View>
+
+    //   {/* <View style={{ height: 50 }} /> */}
+    // </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
