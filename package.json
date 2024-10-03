@@ -18,6 +18,7 @@
     "@expo/vector-icons": "^14.0.2",
     "@op-engineering/op-sqlite": "^9.1.0",
     "@react-navigation/native": "^6.0.2",
+    "chance": "^1.1.12",
     "expo": "~51.0.28",
     "expo-constants": "~16.0.2",
     "expo-dev-client": "~4.0.27",
@@ -40,6 +41,7 @@
     "react-native-web": "~0.19.10"
   },
   "devDependencies": {
+    "@types/chance": "^1.1.6",
     "@babel/core": "^7.20.0",
     "@types/jest": "^29.5.12",
     "@types/react": "~18.2.45",

@@ -1,7 +1,13 @@
-import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { QuickSQLite } from "react-native-quick-sqlite";
+import { useMemo } from "react";
 import {
   Benchmark,
   BenchmarkId,
@@ -12,6 +18,7 @@ import {
   BenchmarkRunnerResults,
   BENCHMARKS,
 } from "@/constants/Benchmarks";
+import { useBenchmarks } from "@/hooks/useBenchmarks";
 
 const wait = (ms: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, ms));
@@ -87,13 +94,7 @@ async function runBenchmarks(
 }
 
 export default function BenchmarkScreen() {
-  const [results, setResults] = useState<BenchmarkResults>();
-
-  const startBenchmarks = useCallback(() => {
-    runBenchmarks(BENCHMARKS).then((results) => {
-      setResults(results);
-    });
-  }, []);
+  const { results, startBenchmarks } = useBenchmarks();
 
   const Results = useMemo(
     () =>
@@ -142,7 +143,7 @@ export default function BenchmarkScreen() {
   );
 
   return (
-    <ScrollView contentContainerStyle={ScreenStyles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View
         style={{
           flexDirection: "row",
@@ -157,19 +158,19 @@ export default function BenchmarkScreen() {
           }}
           style={{ paddingRight: 10 }}
         >
-          <Text style={ScreenStyles.buttonText}>Run benchmarks</Text>
+          <Text style={styles.buttonText}>Run benchmarks</Text>
         </TouchableOpacity>
 
-        {isLoading ? (
-          <ActivityIndicator />
-        ) : (
-          <View style={{ width: 20, height: 20 }} />
-        )}
+        {
+          /* isLoading */ false ? (
+            <ActivityIndicator />
+          ) : (
+            <View style={{ width: 20, height: 20 }} />
+          )
+        }
       </View>
 
       {Results}
-
-      <StatusBar style="auto" />
     </ScrollView>
     // <View style={styles.container}>
     //   <Text style={{ fontWeight: "bold", size: 24 }}>
@@ -202,10 +203,22 @@ export default function BenchmarkScreen() {
 }
 
 const styles = StyleSheet.create({
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: "#fff",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
+    padding: 20,
+  },
+  buttonText: {
+    textAlign: "center",
+    fontWeight: "semibold",
+    fontSize: 18,
+    paddingBottom: 10,
+    color: "black",
   },
 });
