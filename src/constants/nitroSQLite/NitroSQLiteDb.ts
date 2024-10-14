@@ -1,13 +1,13 @@
 import Chance from "chance";
 import type {
-  QuickSQLiteConnection,
+  NitroSQLiteConnection,
   BatchQueryCommand,
 } from "react-native-nitro-sqlite";
 import { open } from "react-native-nitro-sqlite";
 
 const chance = new Chance();
 
-export let NitroSQLiteTestDb: QuickSQLiteConnection | undefined;
+export let NitroSQLiteTestDb: NitroSQLiteConnection | undefined;
 export function resetNitroSQLiteTestDb() {
   try {
     if (NitroSQLiteTestDb != null) {
@@ -31,7 +31,7 @@ export function resetNitroSQLiteTestDb() {
 // Taken from "op-sqlite" example project.
 // Used to demonstrate the performance of NitroSQLite.
 const ROWS = 300000;
-export let NitroSQLiteLargeDb: QuickSQLiteConnection | undefined;
+export let NitroSQLiteLargeDb: NitroSQLiteConnection | undefined;
 export function resetNitroSQLiteLargeDb() {
   try {
     if (NitroSQLiteLargeDb != null) {
