@@ -1,11 +1,11 @@
 import {
   NitroSQLiteTestDb,
   resetNitroSQLiteTestDb,
-} from "@/constants/nitroSQLite/NitroSQLiteDb";
+} from "@/src/constants/nitroSQLite/NitroSQLiteDb";
 import {
   QuickSQLiteTestDb,
   resetQuickSQLiteTestDb,
-} from "@/constants/quickSQLite/QuickSQLiteDb";
+} from "@/src/constants/quickSQLite/QuickSQLiteDb";
 import Chance from "chance";
 
 export type Library = "NitroSQLite" | "QuickSQLite" | "OPSQLite";

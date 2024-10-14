@@ -7,7 +7,7 @@ import {
   BenchmarkRunnerResults,
   Benchmarks,
   BENCHMARKS,
-} from "@/constants/Benchmarks";
+} from "@/src/constants/Benchmarks";
 import { useCallback, useState } from "react";
 
 export function useBenchmarks() {
