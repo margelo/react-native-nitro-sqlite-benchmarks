@@ -5,6 +5,7 @@ import {
   BenchmarkRunner,
   BenchmarkRunnerResult,
   BenchmarkRunnerResults,
+  Benchmarks,
   BENCHMARKS,
 } from "@/constants/Benchmarks";
 import { useCallback, useState } from "react";
@@ -81,11 +82,12 @@ async function runBenchmark(benchmark: Benchmark): Promise<BenchmarkResult> {
 }
 
 async function runBenchmarks(
-  benchmarks: Benchmark[]
+  benchmarks: Benchmarks
 ): Promise<BenchmarkResults> {
   console.log("--------- BEGINNING BENCHMARKS ---------");
-  const results = await executeInSequence(benchmarks, async (benchmark) =>
-    runBenchmark(benchmark)
+  const results = await executeInSequence(
+    Object.values(benchmarks),
+    async (benchmark) => runBenchmark(benchmark)
   );
   console.log("--------- FINISHED SQLITE BENCHMARKS! ---------");
 
