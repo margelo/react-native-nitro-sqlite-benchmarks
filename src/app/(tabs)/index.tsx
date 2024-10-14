@@ -50,7 +50,6 @@ export default function BenchmarkScreen() {
             {runnerResults != null &&
               Object.values(runnerResults).map(({ library, time }) => (
                 <Text style={{ textAlign: "center" }}>
-                  Took{" "}
                   <Text style={{ fontWeight: "bold" }}>
                     {library} took {time}ms
                   </Text>
@@ -92,33 +91,6 @@ export default function BenchmarkScreen() {
 
       {Results}
     </ScrollView>
-    // <View style={styles.container}>
-    //   <Text style={{ fontWeight: "bold", size: 24 }}>
-    //     RNQuickSQLite vs RNNitroSQLite vs OP-SQLite
-    //   </Text>
-
-    //   <View style={{ height: 50 }} />
-
-    //   <Text style={{ fontWeight: "bold", size: 24 }}>
-    //     Loading 300k database
-    //   </Text>
-    //   <View style={{ alignItems: "flex-end" }}>
-    //     <Text>
-    //       ExpoModule.addNumbers(...) took{" "}
-    //       <Text style={{ fontWeight: "bold" }}>{results?.expoTime}ms</Text>
-    //     </Text>
-    //     <Text>
-    //       TurboModule.addNumbers(...) took{" "}
-    //       <Text style={{ fontWeight: "bold" }}>{results?.turboTime}ms</Text>
-    //     </Text>
-    //     <Text>
-    //       NitroModule.addNumbers(...) took{" "}
-    //       <Text style={{ fontWeight: "bold" }}>{results?.nitroTime}ms</Text>
-    //     </Text>
-    //   </View>
-
-    //   {/* <View style={{ height: 50 }} /> */}
-    // </View>
   );
 }
 
