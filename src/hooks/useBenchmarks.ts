@@ -44,16 +44,16 @@ async function executeInSequence<Task, Result>(
   return results;
 }
 
-function executeBenchmarkRunner(
+async function executeBenchmarkRunner(
   benchmark: Benchmark,
   runner: BenchmarkRunner
-): BenchmarkRunnerResult {
+): Promise<BenchmarkRunnerResult> {
   console.log(`🏗️  ${runner.library}: Preparing benchmark`);
   runner.prepare?.();
 
   console.log(`⏳ ${runner.library}: Running ${benchmark.numberOfRuns}x times`);
   const start = performance.now();
-  for (let i = 0; i < benchmark.numberOfRuns; i++) runner.run(i);
+  for (let i = 0; i < benchmark.numberOfRuns; i++) await runner.run(i);
   const end = performance.now();
   const time = (end - start).toFixed(2);
 
@@ -68,7 +68,7 @@ async function runBenchmark(benchmark: Benchmark): Promise<BenchmarkResult> {
   console.log(`🐎 ${benchmark.description}`);
   const results = await executeInSequence(
     Object.values(benchmark.runners),
-    async (runner) => executeBenchmarkRunner(benchmark, runner)
+    async (runner) => await executeBenchmarkRunner(benchmark, runner)
   );
   console.log("----------------------------------------");
 

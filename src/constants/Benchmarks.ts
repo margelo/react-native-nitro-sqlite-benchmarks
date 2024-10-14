@@ -1,9 +1,19 @@
 import {
+  NitroSQLiteLargeDb,
+  resetNitroSQLiteLargeDb,
+} from "./nitroSQLite/NitroSQLiteDb";
+import {
   NitroSQLiteTestDb,
   resetNitroSQLiteTestDb,
 } from "@/constants/nitroSQLite/NitroSQLiteDb";
 import {
+  OPSQLiteLargeDb,
+  resetOpSQLiteLargeDb,
+} from "@/constants/opSQLite/Database";
+import {
+  QuickSQLiteLargeDb,
   QuickSQLiteTestDb,
+  resetQuickSQLiteLargeDb,
   resetQuickSQLiteTestDb,
 } from "@/constants/quickSQLite/QuickSQLiteDb";
 import Chance from "chance";
@@ -20,25 +30,58 @@ const doubleValue = chance.floating();
 
 const NUMBER_OF_INSERTS = 10000;
 export const BENCHMARKS: Benchmarks = {
-  inserts: {
-    id: "inserts",
-    description: `Insert ${NUMBER_OF_INSERTS} rows`,
+  loadDb: {
+    id: "loadDb",
+    description: `Load 300k database`,
     numberOfRuns: NUMBER_OF_INSERTS,
     runners: {
       NitroSQLite: {
         library: "NitroSQLite",
         prepare: () => {
+          resetNitroSQLiteLargeDb();
+        },
+        run: () => {
+          NitroSQLiteTestDb?.execute("SELECT * FROM Test;");
+          return Promise.resolve();
+        },
+      },
+      QuickSQLite: {
+        library: "QuickSQLite",
+        prepare: () => {
+          resetQuickSQLiteLargeDb();
+        },
+        run: () => {
+          QuickSQLiteTestDb?.execute("SELECT * FROM Test;");
+          return Promise.resolve();
+        },
+      },
+      OPSQLite: {
+        library: "OPSQLite",
+        prepare: () => {
+          resetOpSQLiteLargeDb();
+        },
+        run: async () => {
+          await OPSQLiteLargeDb?.execute("SELECT * FROM Test;");
+        },
+      },
+    },
+  },
+  inserts: {
+    id: "inserts",
+    description: `Insert ${NUMBER_OF_INSERTS} rows`,
+    numberOfRuns: 1,
+    runners: {
+      NitroSQLite: {
+        library: "NitroSQLite",
+        prepare: () => {
           resetNitroSQLiteTestDb();
-          NitroSQLiteTestDb?.execute("DROP TABLE IF EXISTS User;");
-          NitroSQLiteTestDb?.execute(
-            "CREATE TABLE User ( id REAL PRIMARY KEY, name TEXT NOT NULL, age REAL, networth REAL) STRICT;"
-          );
         },
         run: (i) => {
           NitroSQLiteTestDb?.execute(
             "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
             [ids[i], stringValue, integerValue, doubleValue]
           );
+          return Promise.resolve();
         },
       },
       QuickSQLite: {
@@ -55,40 +98,18 @@ export const BENCHMARKS: Benchmarks = {
             "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
             [ids[i], stringValue, integerValue, doubleValue]
           );
+          return Promise.resolve();
         },
       },
       OPSQLite: {
         library: "OPSQLite",
         prepare: () => {},
-        run: (i) => {},
+        run: () => {
+          return Promise.resolve();
+        },
       },
     },
   },
-  // {
-  //   description: `SQLite: 1000 INSERTs`,
-  //   numberOfRuns: 1000,
-  //   prepare: () => {
-  //     resetTestDb();
-  //     testDb?.execute("CREATE TABLE t1(a INTEGER, b INTEGER, c VARCHAR(100));");
-  //   },
-  //   run: (i) => {
-  //     testDb?.execute("INSERT INTO t1 (a, b, c) VALUES(?, ?, ?)", [
-  //       ids[i],
-  //       integerValue,
-  //       stringValue,
-  //     ]);
-  //   },
-  // },
-  // 'load-300k-record-db': {
-  //   description: "Load 300k record DB",
-  //   numberOfRuns: 1,
-  //   prepare: () => {
-  //     resetLargeDb();
-  //   },
-  //   run: () => {
-  //     largeDb?.execute("SELECT * FROM Test;");
-  //   },
-  // }
 } as const;
 
 export type Benchmarks = Record<string, Benchmark>;
@@ -103,7 +124,7 @@ export interface Benchmark {
 export interface BenchmarkRunner {
   library: Library;
   prepare?: () => void;
-  run: (i: number) => void;
+  run: (i: number) => Promise<void>;
 }
 
 export type BenchmarkResults = Record<string, BenchmarkResult>;

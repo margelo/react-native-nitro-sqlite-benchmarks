@@ -17,6 +17,11 @@ export function resetQuickSQLiteTestDb() {
     QuickSQLiteTestDb = open({
       name: "test",
     });
+
+    QuickSQLiteTestDb?.execute("DROP TABLE IF EXISTS User;");
+    QuickSQLiteTestDb?.execute(
+      "CREATE TABLE User ( id REAL PRIMARY KEY, name TEXT NOT NULL, age REAL, networth REAL) STRICT;"
+    );
   } catch (e) {
     console.warn("Error resetting user database", e);
   }

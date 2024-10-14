@@ -17,6 +17,11 @@ export function resetNitroSQLiteTestDb() {
     NitroSQLiteTestDb = open({
       name: "test",
     });
+
+    NitroSQLiteTestDb?.execute("DROP TABLE IF EXISTS User;");
+    NitroSQLiteTestDb?.execute(
+      "CREATE TABLE User ( id REAL PRIMARY KEY, name TEXT NOT NULL, age REAL, networth REAL) STRICT;"
+    );
   } catch (e) {
     console.warn("Error resetting user database", e);
   }
@@ -27,7 +32,7 @@ export function resetNitroSQLiteTestDb() {
 // Used to demonstrate the performance of NitroSQLite.
 const ROWS = 300000;
 export let NitroSQLiteLargeDb: QuickSQLiteConnection | undefined;
-export function resetLargeDb() {
+export function resetNitroSQLiteLargeDb() {
   try {
     if (NitroSQLiteLargeDb != null) {
       NitroSQLiteLargeDb.close();
