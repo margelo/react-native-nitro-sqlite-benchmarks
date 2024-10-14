@@ -49,7 +49,7 @@ export default function BenchmarkScreen() {
 
             {runnerResults != null &&
               Object.values(runnerResults).map(({ library, time }) => (
-                <Text style={{ textAlign: "center" }}>
+                <Text style={{ textAlign: "center" }} key={library}>
                   <Text style={{ fontWeight: "bold" }}>
                     {library} took {time}ms
                   </Text>

@@ -42,7 +42,7 @@ export const BENCHMARKS: Benchmarks = {
         },
       },
       QuickSQLite: {
-        library: "NitroSQLite",
+        library: "QuickSQLite",
         prepare: () => {
           resetQuickSQLiteTestDb();
           QuickSQLiteTestDb?.execute("DROP TABLE IF EXISTS User;");

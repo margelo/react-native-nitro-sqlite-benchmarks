@@ -48,31 +48,29 @@ function executeBenchmarkRunner(
   benchmark: Benchmark,
   runner: BenchmarkRunner
 ): BenchmarkRunnerResult {
-  console.log("Preparing benchmark for", runner.library);
+  console.log(`🏗️  ${runner.library}: Preparing benchmark`);
   runner.prepare?.();
 
-  console.log(
-    `Running benchmark ${benchmark.numberOfRuns}x times in ${runner.library}`
-  );
+  console.log(`⏳ ${runner.library}: Running ${benchmark.numberOfRuns}x times`);
   const start = performance.now();
   for (let i = 0; i < benchmark.numberOfRuns; i++) runner.run(i);
   const end = performance.now();
-  console.log(
-    `Finished running benchmark ${benchmark.numberOfRuns}x times in ${runner.library}`
-  );
-
   const time = (end - start).toFixed(2);
-  console.log(`Took ${time}ms to run!`);
+
+  console.log(`✅ ${runner.library}: Took ${time}ms to run!`);
+  console.log();
+
   return { library: runner.library, time };
 }
 
 async function runBenchmark(benchmark: Benchmark): Promise<BenchmarkResult> {
-  console.log(`Starting "${benchmark.description}" benchmark`);
+  console.log();
+  console.log(`🐎 ${benchmark.description}`);
   const results = await executeInSequence(
     Object.values(benchmark.runners),
     async (runner) => executeBenchmarkRunner(benchmark, runner)
   );
-  console.log(`Finished "${benchmark.description}" benchmark`);
+  console.log("----------------------------------------");
 
   const runnerResults = Object.fromEntries(
     results.map((result) => [result.library, result])
@@ -85,10 +83,13 @@ async function runBenchmarks(
   benchmarks: Benchmarks
 ): Promise<BenchmarkResults> {
   console.log("--------- BEGINNING BENCHMARKS ---------");
+
   const results = await executeInSequence(
     Object.values(benchmarks),
     async (benchmark) => runBenchmark(benchmark)
   );
+
+  console.log();
   console.log("--------- FINISHED SQLITE BENCHMARKS! ---------");
 
   return Object.fromEntries(
