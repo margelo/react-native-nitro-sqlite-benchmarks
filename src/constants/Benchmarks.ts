@@ -1,21 +1,16 @@
 import {
+  NitroSQLiteTestDb,
+  resetNitroSQLiteTestDb,
   NitroSQLiteLargeDb,
   resetNitroSQLiteLargeDb,
 } from "./nitroSQLite/NitroSQLiteDb";
-import {
-  NitroSQLiteTestDb,
-  resetNitroSQLiteTestDb,
-} from "@/constants/nitroSQLite/NitroSQLiteDb";
-import {
-  OPSQLiteLargeDb,
-  resetOpSQLiteLargeDb,
-} from "@/constants/opSQLite/Database";
+import { OPSQLiteLargeDb, resetOpSQLiteLargeDb } from "./opSQLite/Database";
 import {
   QuickSQLiteLargeDb,
   QuickSQLiteTestDb,
   resetQuickSQLiteLargeDb,
   resetQuickSQLiteTestDb,
-} from "@/constants/quickSQLite/QuickSQLiteDb";
+} from "./quickSQLite/QuickSQLiteDb";
 import Chance from "chance";
 
 export type Library = "NitroSQLite" | "QuickSQLite" | "OPSQLite";
@@ -41,7 +36,7 @@ export const BENCHMARKS: Benchmarks = {
           resetNitroSQLiteLargeDb();
         },
         run: () => {
-          NitroSQLiteTestDb?.execute("SELECT * FROM Test;");
+          NitroSQLiteLargeDb?.execute("SELECT * FROM Test;");
           return Promise.resolve();
         },
       },
@@ -51,7 +46,7 @@ export const BENCHMARKS: Benchmarks = {
           resetQuickSQLiteLargeDb();
         },
         run: () => {
-          QuickSQLiteTestDb?.execute("SELECT * FROM Test;");
+          QuickSQLiteLargeDb?.execute("SELECT * FROM Test;");
           return Promise.resolve();
         },
       },
