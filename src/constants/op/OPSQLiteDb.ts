@@ -4,8 +4,27 @@ import { DB, open } from "@op-engineering/op-sqlite";
 
 const chance = new Chance();
 
-const ROWS = 300000;
+export let OPSQLiteTestDb: DB | undefined;
+export function resetOPSQLiteTestDb() {
+  try {
+    if (OPSQLiteTestDb != null) {
+      OPSQLiteTestDb.close();
+      OPSQLiteTestDb.delete();
+    }
+    OPSQLiteTestDb = open({
+      name: "test",
+    });
 
+    OPSQLiteTestDb?.execute("DROP TABLE IF EXISTS User;");
+    OPSQLiteTestDb?.execute(
+      "CREATE TABLE User ( id REAL PRIMARY KEY, name TEXT NOT NULL, age REAL, networth REAL) STRICT;"
+    );
+  } catch (e) {
+    console.warn("Error resetting user database", e);
+  }
+}
+
+const ROWS = 300000;
 export let OPSQLiteLargeDb: DB | undefined;
 export async function resetOpSQLiteLargeDb() {
   try {

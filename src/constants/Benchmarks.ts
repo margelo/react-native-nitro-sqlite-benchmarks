@@ -3,14 +3,19 @@ import {
   resetNitroSQLiteTestDb,
   NitroSQLiteLargeDb,
   resetNitroSQLiteLargeDb,
-} from "./nitroSQLite/NitroSQLiteDb";
-import { OPSQLiteLargeDb, resetOpSQLiteLargeDb } from "./opSQLite/Database";
+} from "./nitro/NitroSQLiteDb";
+import {
+  OPSQLiteLargeDb,
+  OPSQLiteTestDb,
+  resetOpSQLiteLargeDb,
+  resetOPSQLiteTestDb,
+} from "./op/OPSQLiteDb";
 import {
   QuickSQLiteLargeDb,
   QuickSQLiteTestDb,
   resetQuickSQLiteLargeDb,
   resetQuickSQLiteTestDb,
-} from "./quickSQLite/QuickSQLiteDb";
+} from "./quick/QuickSQLiteDb";
 import Chance from "chance";
 
 export type Library = "NitroSQLite" | "QuickSQLite" | "OPSQLite";
@@ -62,6 +67,101 @@ export const BENCHMARKS: Benchmarks = {
       },
     },
   },
+  "single-select": {
+    id: "single-select",
+    description: `Select a single row`,
+    numberOfRuns: 1,
+    runners: {
+      NitroSQLite: {
+        library: "NitroSQLite",
+        prepare: () => {
+          resetNitroSQLiteTestDb();
+          NitroSQLiteTestDb?.execute(
+            "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
+            [ids[0], stringValue, integerValue, doubleValue]
+          );
+        },
+        run: (i) => {
+          NitroSQLiteTestDb?.execute(`SELECT * FROM User WHERE ID=${ids[0]};`);
+          return Promise.resolve();
+        },
+      },
+      QuickSQLite: {
+        library: "QuickSQLite",
+        prepare: () => {
+          resetQuickSQLiteTestDb();
+          QuickSQLiteTestDb?.execute(
+            "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
+            [ids[0], stringValue, integerValue, doubleValue]
+          );
+        },
+        run: (i) => {
+          QuickSQLiteTestDb?.execute(`SELECT * FROM User WHERE ID=${ids[0]};`);
+          return Promise.resolve();
+        },
+      },
+      OPSQLite: {
+        library: "OPSQLite",
+        prepare: () => {
+          resetOPSQLiteTestDb();
+          OPSQLiteTestDb?.execute(
+            "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
+            [ids[0], stringValue, integerValue, doubleValue]
+          );
+        },
+        run: () => {
+          OPSQLiteTestDb?.execute(`SELECT * FROM User WHERE ID=${ids[0]};`);
+          return Promise.resolve();
+        },
+      },
+    },
+  },
+  "single-insert": {
+    id: "single-insert",
+    description: `Insert a single row`,
+    numberOfRuns: 1,
+    runners: {
+      NitroSQLite: {
+        library: "NitroSQLite",
+        prepare: () => {
+          resetNitroSQLiteTestDb();
+        },
+        run: (i) => {
+          NitroSQLiteTestDb?.execute(
+            "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
+            [ids[i], stringValue, integerValue, doubleValue]
+          );
+          return Promise.resolve();
+        },
+      },
+      QuickSQLite: {
+        library: "QuickSQLite",
+        prepare: () => {
+          resetQuickSQLiteTestDb();
+        },
+        run: (i) => {
+          QuickSQLiteTestDb?.execute(
+            "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
+            [ids[i], stringValue, integerValue, doubleValue]
+          );
+          return Promise.resolve();
+        },
+      },
+      OPSQLite: {
+        library: "OPSQLite",
+        prepare: () => {
+          resetOPSQLiteTestDb();
+        },
+        run: (i) => {
+          OPSQLiteTestDb?.execute(
+            "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
+            [ids[i], stringValue, integerValue, doubleValue]
+          );
+          return Promise.resolve();
+        },
+      },
+    },
+  },
   inserts: {
     id: "inserts",
     description: `Insert ${NUMBER_OF_INSERTS} rows`,
@@ -84,10 +184,6 @@ export const BENCHMARKS: Benchmarks = {
         library: "QuickSQLite",
         prepare: () => {
           resetQuickSQLiteTestDb();
-          QuickSQLiteTestDb?.execute("DROP TABLE IF EXISTS User;");
-          QuickSQLiteTestDb?.execute(
-            "CREATE TABLE User ( id REAL PRIMARY KEY, name TEXT NOT NULL, age REAL, networth REAL) STRICT;"
-          );
         },
         run: (i) => {
           QuickSQLiteTestDb?.execute(
@@ -99,8 +195,14 @@ export const BENCHMARKS: Benchmarks = {
       },
       OPSQLite: {
         library: "OPSQLite",
-        prepare: () => {},
-        run: () => {
+        prepare: () => {
+          resetOPSQLiteTestDb();
+        },
+        run: (i) => {
+          OPSQLiteTestDb?.execute(
+            "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
+            [ids[i], stringValue, integerValue, doubleValue]
+          );
           return Promise.resolve();
         },
       },

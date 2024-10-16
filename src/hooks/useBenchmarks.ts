@@ -28,7 +28,7 @@ const wait = (ms: number) =>
 async function executeInSequence<Task, Result>(
   tasks: Task[],
   execute: (t: Task) => Promise<Result>,
-  pauseTime = 1000
+  pauseTime = 1000 // between each benchmark runner, we want to wait 1000ms by default
 ) {
   const results: Result[] = [];
   async function run(i = 0): Promise<void> {
@@ -68,7 +68,9 @@ async function runBenchmark(benchmark: Benchmark): Promise<BenchmarkResult> {
   console.log(`🐎 ${benchmark.description}`);
   const results = await executeInSequence(
     Object.values(benchmark.runners),
-    async (runner) => await executeBenchmarkRunner(benchmark, runner)
+    async (runner) => await executeBenchmarkRunner(benchmark, runner),
+    // Between different benchmarks, we want to wait a bit longer
+    3000
   );
   console.log("----------------------------------------");
 
