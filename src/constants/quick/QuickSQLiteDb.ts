@@ -18,8 +18,8 @@ export function resetQuickSQLiteTestDb() {
       name: "test",
     });
 
-    QuickSQLiteTestDb?.execute("DROP TABLE IF EXISTS User;");
-    QuickSQLiteTestDb?.execute(
+    QuickSQLiteTestDb.execute("DROP TABLE IF EXISTS User;");
+    QuickSQLiteTestDb.execute(
       "CREATE TABLE User ( id REAL PRIMARY KEY, name TEXT NOT NULL, age REAL, networth REAL) STRICT;"
     );
   } catch (e) {
@@ -42,7 +42,7 @@ export function resetQuickSQLiteLargeDb() {
       name: "large",
     });
 
-    QuickSQLiteLargeDb?.execute("DROP TABLE IF EXISTS Test;");
+    QuickSQLiteLargeDb.execute("DROP TABLE IF EXISTS Test;");
     QuickSQLiteLargeDb.execute(
       "CREATE TABLE Test ( id INT PRIMARY KEY, v1 TEXT, v2 TEXT, v3 TEXT, v4 TEXT, v5 TEXT, v6 INT, v7 INT, v8 INT, v9 INT, v10 INT, v11 REAL, v12 REAL, v13 REAL, v14 REAL) STRICT;"
     );
@@ -75,6 +75,6 @@ export function resetQuickSQLiteLargeDb() {
 
     QuickSQLiteLargeDb.executeBatch(insertions);
   } catch (e) {
-    console.warn("Error resetting user database", e);
+    console.warn("Error resetting large database", e);
   }
 }

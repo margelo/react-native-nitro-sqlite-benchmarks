@@ -15,8 +15,8 @@ export function resetOPSQLiteTestDb() {
       name: "test",
     });
 
-    OPSQLiteTestDb?.execute("DROP TABLE IF EXISTS User;");
-    OPSQLiteTestDb?.execute(
+    OPSQLiteTestDb.execute("DROP TABLE IF EXISTS User;");
+    OPSQLiteTestDb.execute(
       "CREATE TABLE User ( id REAL PRIMARY KEY, name TEXT NOT NULL, age REAL, networth REAL) STRICT;"
     );
   } catch (e) {
@@ -69,7 +69,7 @@ export async function resetOpSQLiteLargeDb() {
 
     await OPSQLiteLargeDb.executeBatch(insertions);
   } catch (e) {
-    console.warn("Error resetting user database", e);
+    console.warn("Error resetting large database", e);
   }
 }
 
