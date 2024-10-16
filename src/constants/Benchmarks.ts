@@ -24,11 +24,12 @@ const integerValue = chance.integer();
 const doubleValue = chance.floating();
 
 const NUMBER_OF_INSERTS = 10000;
+
 export const BENCHMARKS: Benchmarks = {
   loadDb: {
     id: "loadDb",
     description: `Load 300k database`,
-    numberOfRuns: NUMBER_OF_INSERTS,
+    numberOfRuns: 1,
     runners: {
       NitroSQLite: {
         library: "NitroSQLite",
@@ -64,7 +65,7 @@ export const BENCHMARKS: Benchmarks = {
   inserts: {
     id: "inserts",
     description: `Insert ${NUMBER_OF_INSERTS} rows`,
-    numberOfRuns: 1,
+    numberOfRuns: NUMBER_OF_INSERTS,
     runners: {
       NitroSQLite: {
         library: "NitroSQLite",
