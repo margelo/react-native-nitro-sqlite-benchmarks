@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
+    "start-release": "expo start --no-dev --minify",
     "prebuild": "expo prebuild --clean",
     "prebuild-android": "bun prebuild -p android",
     "prebuild-ios": "bun prebuild -p ios",
