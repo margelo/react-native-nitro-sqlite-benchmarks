@@ -1,13 +1,7 @@
 import { Benchmark } from "@/constants/benchmarks/types";
-import {
-  NitroSQLiteTestDb,
-  resetNitroSQLiteTestDb,
-} from "@/constants/nitro/NitroSQLiteDb";
-import { OPSQLiteTestDb, resetOPSQLiteTestDb } from "@/constants/op/OPSQLiteDb";
-import {
-  QuickSQLiteTestDb,
-  resetQuickSQLiteTestDb,
-} from "@/constants/quick/QuickSQLiteDb";
+import NitroSQLiteTestDb from "../nitro/TestDb";
+import OPSQLiteTestDb from "../op/TestDb";
+import QuickSQLiteTestDb from "../quick/TestDb";
 import { Chance } from "chance";
 
 const chance = new Chance();
@@ -22,43 +16,45 @@ export const singleSelect: Benchmark = {
   runners: {
     NitroSQLite: {
       library: "NitroSQLite",
-      prepare: () => {
-        resetNitroSQLiteTestDb();
-        NitroSQLiteTestDb?.execute(
+      setup: () => {
+        NitroSQLiteTestDb.setup();
+        NitroSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
           [0, stringValue, integerValue, doubleValue]
         );
       },
       run: (i) => {
-        NitroSQLiteTestDb?.execute(`SELECT * FROM User WHERE ID=${0};`);
+        NitroSQLiteTestDb.db?.execute(`SELECT * FROM User WHERE ID=${0};`);
         return Promise.resolve();
       },
+      teardown: NitroSQLiteTestDb.close,
     },
     QuickSQLite: {
       library: "QuickSQLite",
-      prepare: () => {
-        resetQuickSQLiteTestDb();
-        QuickSQLiteTestDb?.execute(
+      setup: () => {
+        QuickSQLiteTestDb.setup();
+        QuickSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
           [0, stringValue, integerValue, doubleValue]
         );
       },
       run: (i) => {
-        QuickSQLiteTestDb?.execute(`SELECT * FROM User WHERE ID=${0};`);
+        QuickSQLiteTestDb.db?.execute(`SELECT * FROM User WHERE ID=${0};`);
         return Promise.resolve();
       },
+      teardown: QuickSQLiteTestDb.close,
     },
     OPSQLite: {
       library: "OPSQLite",
-      prepare: () => {
-        resetOPSQLiteTestDb();
-        OPSQLiteTestDb?.execute(
+      setup: () => {
+        OPSQLiteTestDb.setup();
+        OPSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
           [0, stringValue, integerValue, doubleValue]
         );
       },
       run: () => {
-        OPSQLiteTestDb?.execute(`SELECT * FROM User WHERE ID=${0};`);
+        OPSQLiteTestDb.db?.execute(`SELECT * FROM User WHERE ID=${0};`);
         return Promise.resolve();
       },
     },

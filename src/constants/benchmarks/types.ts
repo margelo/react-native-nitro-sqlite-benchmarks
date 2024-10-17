@@ -11,8 +11,9 @@ export interface Benchmark {
 
 export interface BenchmarkRunner {
   library: Library;
-  prepare?: () => void;
+  setup?: () => void;
   run: (i: number) => Promise<void>;
+  teardown?: () => void;
 }
 
 export type BenchmarkResults = Record<string, BenchmarkResult>;

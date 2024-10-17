@@ -5,7 +5,7 @@ import { inserts } from "@/constants/benchmarks/inserts";
 import { Benchmarks } from "@/constants/benchmarks/types";
 
 export const BENCHMARKS: Benchmarks = {
-  loadDb: loadDb,
+  loadDb,
   singleSelect,
   singleInsert,
   inserts,

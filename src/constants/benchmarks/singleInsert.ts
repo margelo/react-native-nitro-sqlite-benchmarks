@@ -1,13 +1,7 @@
 import { Benchmark } from "@/constants/benchmarks/types";
-import {
-  NitroSQLiteTestDb,
-  resetNitroSQLiteTestDb,
-} from "@/constants/nitro/NitroSQLiteDb";
-import { OPSQLiteTestDb, resetOPSQLiteTestDb } from "@/constants/op/OPSQLiteDb";
-import {
-  QuickSQLiteTestDb,
-  resetQuickSQLiteTestDb,
-} from "@/constants/quick/QuickSQLiteDb";
+import NitroSQLiteTestDb from "../nitro/TestDb";
+import OPSQLiteTestDb from "../op/TestDb";
+import QuickSQLiteTestDb from "../quick/TestDb";
 import { Chance } from "chance";
 
 const chance = new Chance();
@@ -22,24 +16,21 @@ export const singleInsert: Benchmark = {
   runners: {
     NitroSQLite: {
       library: "NitroSQLite",
-      prepare: () => {
-        resetNitroSQLiteTestDb();
-      },
+      setup: NitroSQLiteTestDb.setup,
       run: () => {
-        NitroSQLiteTestDb?.execute(
+        NitroSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
           [0, stringValue, integerValue, doubleValue]
         );
         return Promise.resolve();
       },
+      teardown: NitroSQLiteTestDb.close,
     },
     QuickSQLite: {
       library: "QuickSQLite",
-      prepare: () => {
-        resetQuickSQLiteTestDb();
-      },
+      setup: QuickSQLiteTestDb.setup,
       run: () => {
-        QuickSQLiteTestDb?.execute(
+        QuickSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
           [0, stringValue, integerValue, doubleValue]
         );
@@ -48,16 +39,15 @@ export const singleInsert: Benchmark = {
     },
     OPSQLite: {
       library: "OPSQLite",
-      prepare: () => {
-        resetOPSQLiteTestDb();
-      },
+      setup: OPSQLiteTestDb.setup,
       run: () => {
-        OPSQLiteTestDb?.execute(
+        OPSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
           [0, stringValue, integerValue, doubleValue]
         );
         return Promise.resolve();
       },
+      teardown: OPSQLiteTestDb.close,
     },
   },
 };

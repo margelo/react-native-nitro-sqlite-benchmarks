@@ -1,16 +1,7 @@
 import { Benchmark } from "@/constants/benchmarks/types";
-import {
-  NitroSQLiteLargeDb,
-  resetNitroSQLiteLargeDb,
-} from "@/constants/nitro/NitroSQLiteDb";
-import {
-  OPSQLiteLargeDb,
-  resetOpSQLiteLargeDb,
-} from "@/constants/op/OPSQLiteDb";
-import {
-  QuickSQLiteLargeDb,
-  resetQuickSQLiteLargeDb,
-} from "@/constants/quick/QuickSQLiteDb";
+import NitroSQLiteLargeDb from "@/constants/nitro/LargeDb";
+import OPSQLiteLargeDb from "@/constants/op/LargeDb";
+import QuickSQLiteLargeDb from "@/constants/quick/LargeDb";
 
 export const loadDb: Benchmark = {
   id: "loadDb",
@@ -19,32 +10,29 @@ export const loadDb: Benchmark = {
   runners: {
     NitroSQLite: {
       library: "NitroSQLite",
-      prepare: () => {
-        resetNitroSQLiteLargeDb();
-      },
+      setup: NitroSQLiteLargeDb.setup,
       run: () => {
-        NitroSQLiteLargeDb?.execute("SELECT * FROM Test;");
+        NitroSQLiteLargeDb.db?.execute("SELECT * FROM Test;");
         return Promise.resolve();
       },
+      teardown: NitroSQLiteLargeDb.close,
     },
     QuickSQLite: {
       library: "QuickSQLite",
-      prepare: () => {
-        resetQuickSQLiteLargeDb();
-      },
+      setup: QuickSQLiteLargeDb.setup,
       run: () => {
-        QuickSQLiteLargeDb?.execute("SELECT * FROM Test;");
+        QuickSQLiteLargeDb.db?.execute("SELECT * FROM Test;");
         return Promise.resolve();
       },
+      teardown: QuickSQLiteLargeDb.close,
     },
     OPSQLite: {
       library: "OPSQLite",
-      prepare: () => {
-        resetOpSQLiteLargeDb();
-      },
+      setup: OPSQLiteLargeDb.setup,
       run: async () => {
-        await OPSQLiteLargeDb?.execute("SELECT * FROM Test;");
+        await OPSQLiteLargeDb.db?.execute("SELECT * FROM Test;");
       },
+      teardown: OPSQLiteLargeDb.close,
     },
   },
 };

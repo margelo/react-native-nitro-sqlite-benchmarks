@@ -48,7 +48,7 @@ async function runBenchmarks(
 
 async function runBenchmark(benchmark: Benchmark): Promise<BenchmarkResult> {
   console.log();
-  console.log(`🐎 ${benchmark.description}`);
+  console.log(`🏁 ${benchmark.description}`);
   const results = await executeInSequence(
     Object.values(benchmark.runners),
     async (runner) => await executeBenchmarkRunner(benchmark, runner),
@@ -68,8 +68,8 @@ async function executeBenchmarkRunner(
   runner: BenchmarkRunner,
   pauseTime = BENCHMARK_RUNNER_ITERATION_PAUSE_TIME
 ): Promise<BenchmarkRunnerResult> {
-  console.log(`🏗️  ${runner.library}: Preparing benchmark`);
-  runner.prepare?.();
+  console.log(`🛠️  ${runner.library}: Setting up benchmark`);
+  runner.setup?.();
 
   console.log(`⏳ ${runner.library}: Running ${benchmark.numberOfRuns}x times`);
 
@@ -84,7 +84,13 @@ async function executeBenchmarkRunner(
   }
   const averageTime = times.reduce((a, b) => a + b, 0) / times.length;
 
-  console.log(`✅ ${runner.library}: Took ${averageTime.toFixed(2)}ms to run!`);
+  console.log(
+    `✅ ${runner.library}: Took ${averageTime.toFixed(2)}ms on average to run! ⏱️`
+  );
+
+  console.log(`🔄  ${runner.library}: Tearing down benchmark`);
+  runner.teardown?.();
+
   console.log();
 
   return { library: runner.library, times, averageTime };

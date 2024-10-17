@@ -1,13 +1,7 @@
 import { Benchmark } from "@/constants/benchmarks/types";
-import {
-  NitroSQLiteTestDb,
-  resetNitroSQLiteTestDb,
-} from "../nitro/NitroSQLiteDb";
-import { OPSQLiteTestDb, resetOPSQLiteTestDb } from "../op/OPSQLiteDb";
-import {
-  QuickSQLiteTestDb,
-  resetQuickSQLiteTestDb,
-} from "../quick/QuickSQLiteDb";
+import NitroSQLiteTestDb from "../nitro/TestDb";
+import OPSQLiteTestDb from "../op/TestDb";
+import QuickSQLiteTestDb from "../quick/TestDb";
 import { Chance } from "chance";
 
 const NUMBER_OF_INSERTS = 10000;
@@ -27,42 +21,39 @@ export const inserts: Benchmark = {
   runners: {
     NitroSQLite: {
       library: "NitroSQLite",
-      prepare: () => {
-        resetNitroSQLiteTestDb();
-      },
+      setup: NitroSQLiteTestDb.setup,
       run: (i) => {
-        NitroSQLiteTestDb?.execute(
+        NitroSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
           [ids[i], stringValue, integerValue, doubleValue]
         );
         return Promise.resolve();
       },
+      teardown: NitroSQLiteTestDb.close,
     },
     QuickSQLite: {
       library: "QuickSQLite",
-      prepare: () => {
-        resetQuickSQLiteTestDb();
-      },
+      setup: QuickSQLiteTestDb.setup,
       run: (i) => {
-        QuickSQLiteTestDb?.execute(
+        QuickSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
           [ids[i], stringValue, integerValue, doubleValue]
         );
         return Promise.resolve();
       },
+      teardown: QuickSQLiteTestDb.close,
     },
     OPSQLite: {
       library: "OPSQLite",
-      prepare: () => {
-        resetOPSQLiteTestDb();
-      },
+      setup: OPSQLiteTestDb.setup,
       run: (i) => {
-        OPSQLiteTestDb?.execute(
+        OPSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
           [ids[i], stringValue, integerValue, doubleValue]
         );
         return Promise.resolve();
       },
+      teardown: OPSQLiteTestDb.close,
     },
   },
 };
