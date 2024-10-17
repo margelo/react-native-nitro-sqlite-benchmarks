@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 import { useMemo } from "react";
-import { BENCHMARKS } from "@/constants/Benchmarks";
+import { BENCHMARKS } from "@/constants/benchmarks";
 import { useBenchmarks } from "@/hooks/useBenchmarks";
 
 const BENCHMARKS_ARRAY = Object.values(BENCHMARKS);
@@ -48,10 +48,10 @@ export default function BenchmarkScreen() {
             </View>
 
             {runnerResults != null &&
-              Object.values(runnerResults).map(({ library, time }) => (
+              Object.values(runnerResults).map(({ library, averageTime }) => (
                 <Text style={{ textAlign: "center" }} key={library}>
                   <Text style={{ fontWeight: "bold" }}>
-                    {library} took {time}ms
+                    {library} took {averageTime.toFixed(2)}ms
                   </Text>
                 </Text>
               ))}
