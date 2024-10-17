@@ -1,12 +1,10 @@
 import { loadDb } from "@/constants/benchmarks/loadDb";
-import { singleSelect } from "@/constants/benchmarks/singleSelect";
-import { singleInsert } from "@/constants/benchmarks/singleInsert";
-import { inserts } from "@/constants/benchmarks/inserts";
+import { singleSelect } from "@/constants/benchmarks/select";
+import { insert } from "@/constants/benchmarks/insert";
 import { Benchmarks } from "@/constants/benchmarks/types";
 
 export const BENCHMARKS: Benchmarks = {
   loadDb,
   singleSelect,
-  singleInsert,
-  inserts,
+  insert,
 } as const;

@@ -1,12 +1,12 @@
 import { Benchmark } from "@/constants/benchmarks/types";
-import NitroSQLiteLargeDb from "@/constants/nitro/LargeDb";
-import OPSQLiteLargeDb from "@/constants/op/LargeDb";
-import QuickSQLiteLargeDb from "@/constants/quick/LargeDb";
+import NitroSQLiteLargeDb from "@/constants/benchmarks/nitro/LargeDb";
+import OPSQLiteLargeDb from "@/constants/benchmarks/op/LargeDb";
+import QuickSQLiteLargeDb from "@/constants/benchmarks/quick/LargeDb";
 
 export const loadDb: Benchmark = {
   id: "loadDb",
   description: `Load 300k database`,
-  numberOfRuns: 1,
+  numberOfRuns: 10,
   runners: {
     NitroSQLite: {
       library: "NitroSQLite",

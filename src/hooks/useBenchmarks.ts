@@ -39,7 +39,7 @@ async function runBenchmarks(
   );
 
   console.log();
-  console.log("--------- FINISHED SQLITE BENCHMARKS! ---------");
+  console.log("--------- FINISHED BENCHMARKS ---------");
 
   return Object.fromEntries(
     results.map((result) => [result.id, result])
@@ -68,8 +68,8 @@ async function executeBenchmarkRunner(
   runner: BenchmarkRunner,
   pauseTime = BENCHMARK_RUNNER_ITERATION_PAUSE_TIME
 ): Promise<BenchmarkRunnerResult> {
-  console.log(`🛠️  ${runner.library}: Setting up benchmark`);
-  runner.setup?.();
+  console.log(`🛠️  ${runner.library}: Setup`);
+  await runner.setup?.();
 
   console.log(`⏳ ${runner.library}: Running ${benchmark.numberOfRuns}x times`);
 
@@ -88,8 +88,8 @@ async function executeBenchmarkRunner(
     `✅ ${runner.library}: Took ${averageTime.toFixed(2)}ms on average to run! ⏱️`
   );
 
-  console.log(`🔄  ${runner.library}: Tearing down benchmark`);
-  runner.teardown?.();
+  console.log(`🔄  ${runner.library}: Teardown`);
+  await runner.teardown?.();
 
   console.log();
 

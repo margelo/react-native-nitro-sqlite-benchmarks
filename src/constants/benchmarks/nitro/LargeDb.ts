@@ -14,10 +14,8 @@ const chance = new Chance();
 let _largeDb: NitroSQLiteConnection | undefined;
 async function setupLargeDb() {
   try {
-    if (_largeDb != null) {
-      _largeDb.close();
-      _largeDb.delete();
-    }
+    if (_largeDb != null) closeLargeDb();
+
     _largeDb = open({
       name: "large",
     });
@@ -60,8 +58,13 @@ async function setupLargeDb() {
   }
 }
 
-function closeLargeDb() {
-  _largeDb?.close();
+async function closeLargeDb() {
+  return new Promise<void>((resolve) => {
+    _largeDb?.close();
+    _largeDb?.delete();
+    _largeDb = undefined;
+    resolve();
+  });
 }
 
 export default {

@@ -1,26 +1,27 @@
 import { Benchmark } from "@/constants/benchmarks/types";
-import NitroSQLiteTestDb from "../nitro/TestDb";
-import OPSQLiteTestDb from "../op/TestDb";
-import QuickSQLiteTestDb from "../quick/TestDb";
-import { Chance } from "chance";
+import NitroSQLiteTestDb from "./nitro/TestDb";
+import OPSQLiteTestDb from "./op/TestDb";
+import QuickSQLiteTestDb from "./quick/TestDb";
+import {
+  doubleValue,
+  ids,
+  integerValue,
+  NUMBER_OF_USERS,
+  stringValue,
+} from "@/constants/benchmarks/data";
 
-const chance = new Chance();
-const stringValue = chance.name();
-const integerValue = chance.integer();
-const doubleValue = chance.floating();
-
-export const singleInsert: Benchmark = {
-  id: "singleInsert",
-  description: `Insert a single row`,
-  numberOfRuns: 1,
+export const insert: Benchmark = {
+  id: "insert",
+  description: `Insert a row`,
+  numberOfRuns: NUMBER_OF_USERS,
   runners: {
     NitroSQLite: {
       library: "NitroSQLite",
       setup: NitroSQLiteTestDb.setup,
-      run: () => {
+      run: (i) => {
         NitroSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
-          [0, stringValue, integerValue, doubleValue]
+          [ids[i], stringValue, integerValue, doubleValue]
         );
         return Promise.resolve();
       },
@@ -29,21 +30,22 @@ export const singleInsert: Benchmark = {
     QuickSQLite: {
       library: "QuickSQLite",
       setup: QuickSQLiteTestDb.setup,
-      run: () => {
+      run: (i) => {
         QuickSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
-          [0, stringValue, integerValue, doubleValue]
+          [ids[i], stringValue, integerValue, doubleValue]
         );
         return Promise.resolve();
       },
+      teardown: QuickSQLiteTestDb.close,
     },
     OPSQLite: {
       library: "OPSQLite",
       setup: OPSQLiteTestDb.setup,
-      run: () => {
+      run: (i) => {
         OPSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
-          [0, stringValue, integerValue, doubleValue]
+          [ids[i], stringValue, integerValue, doubleValue]
         );
         return Promise.resolve();
       },

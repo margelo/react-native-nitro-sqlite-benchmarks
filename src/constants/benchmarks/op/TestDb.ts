@@ -1,12 +1,10 @@
-import { open, QuickSQLiteConnection } from "react-native-quick-sqlite";
+import { DB, open } from "@op-engineering/op-sqlite";
 
-let _testDb: QuickSQLiteConnection | undefined;
+let _testDb: DB | undefined;
 function setupTestDb() {
   try {
-    if (_testDb != null) {
-      _testDb.close();
-      _testDb.delete();
-    }
+    if (_testDb != null) closeTestDb();
+
     _testDb = open({
       name: "test",
     });
@@ -22,6 +20,8 @@ function setupTestDb() {
 
 function closeTestDb() {
   _testDb?.close();
+  _testDb?.delete();
+  _testDb = undefined;
 }
 
 export default {
