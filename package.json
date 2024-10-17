@@ -66,5 +66,8 @@
       ]
     }
   },
+  "op-sqlite": {
+    "performanceMode": "2"
+  },
   "private": true
 }

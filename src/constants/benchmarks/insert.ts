@@ -1,53 +1,50 @@
 import { Benchmark } from "@/constants/benchmarks/types";
-import NitroSQLiteTestDb from "./nitro/TestDb";
-import OPSQLiteTestDb from "./op/TestDb";
-import QuickSQLiteTestDb from "./quick/TestDb";
+import * as NitroSQLiteTestDb from "./nitro/TestDb";
+import * as OPSQLiteTestDb from "./op/TestDb";
+import * as QuickSQLiteTestDb from "./quick/TestDb";
 import {
   doubleValue,
   ids,
   integerValue,
-  NUMBER_OF_USERS,
+  NUMBER_OF_RUNS,
   stringValue,
 } from "@/constants/benchmarks/data";
 
 export const insert: Benchmark = {
   id: "insert",
   description: `Insert a row`,
-  numberOfRuns: NUMBER_OF_USERS,
+  numberOfRuns: NUMBER_OF_RUNS,
   runners: {
     NitroSQLite: {
       library: "NitroSQLite",
       setup: NitroSQLiteTestDb.setup,
-      run: (i) => {
+      run: async (i) => {
         NitroSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
           [ids[i], stringValue, integerValue, doubleValue]
         );
-        return Promise.resolve();
       },
       teardown: NitroSQLiteTestDb.close,
     },
     QuickSQLite: {
       library: "QuickSQLite",
       setup: QuickSQLiteTestDb.setup,
-      run: (i) => {
+      run: async (i) => {
         QuickSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
           [ids[i], stringValue, integerValue, doubleValue]
         );
-        return Promise.resolve();
       },
       teardown: QuickSQLiteTestDb.close,
     },
     OPSQLite: {
       library: "OPSQLite",
       setup: OPSQLiteTestDb.setup,
-      run: (i) => {
+      run: async (i) => {
         OPSQLiteTestDb.db?.execute(
           "INSERT INTO User (id, name, age, networth) VALUES(?, ?, ?, ?)",
           [ids[i], stringValue, integerValue, doubleValue]
         );
-        return Promise.resolve();
       },
       teardown: OPSQLiteTestDb.close,
     },

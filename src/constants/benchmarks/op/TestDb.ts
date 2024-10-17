@@ -1,16 +1,16 @@
 import { DB, open } from "@op-engineering/op-sqlite";
 
-let _testDb: DB | undefined;
-function setupTestDb() {
+export let db: DB | undefined;
+export async function setup() {
   try {
-    if (_testDb != null) closeTestDb();
+    if (db != null) await close();
 
-    _testDb = open({
+    db = open({
       name: "test",
     });
 
-    _testDb.execute("DROP TABLE IF EXISTS User;");
-    _testDb.execute(
+    db.execute("DROP TABLE IF EXISTS User;");
+    db.execute(
       "CREATE TABLE User ( id REAL PRIMARY KEY, name TEXT NOT NULL, age REAL, networth REAL) STRICT;"
     );
   } catch (e) {
@@ -18,14 +18,8 @@ function setupTestDb() {
   }
 }
 
-function closeTestDb() {
-  _testDb?.close();
-  _testDb?.delete();
-  _testDb = undefined;
+export async function close() {
+  db?.close();
+  db?.delete();
+  db = undefined;
 }
-
-export default {
-  db: _testDb,
-  setup: setupTestDb,
-  close: closeTestDb,
-};

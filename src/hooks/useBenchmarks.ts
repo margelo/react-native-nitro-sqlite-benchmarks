@@ -11,9 +11,9 @@ import { BENCHMARKS } from "@/constants/benchmarks";
 import { useCallback, useState } from "react";
 
 // We want to wait a few milliseconds between each benchmark, runner and iteration to give the system time to cool down
-const BENCHMARK_PAUSE_TIME = 1000;
-const BENCHMARK_RUNNER_PAUSE_TIME = 100;
-const BENCHMARK_RUNNER_ITERATION_PAUSE_TIME = 10;
+const BENCHMARK_PAUSE_TIME = 3000;
+const BENCHMARK_RUNNER_PAUSE_TIME = 1000;
+const BENCHMARK_RUNNER_ITERATION_PAUSE_TIME = 1000;
 
 export function useBenchmarks() {
   const [results, setResults] = useState<BenchmarkResults>();
@@ -68,7 +68,7 @@ async function executeBenchmarkRunner(
   runner: BenchmarkRunner,
   pauseTime = BENCHMARK_RUNNER_ITERATION_PAUSE_TIME
 ): Promise<BenchmarkRunnerResult> {
-  console.log(`🛠️  ${runner.library}: Setup`);
+  console.log(`🛠️ ${runner.library}: Setup`);
   await runner.setup?.();
 
   console.log(`⏳ ${runner.library}: Running ${benchmark.numberOfRuns}x times`);
@@ -106,7 +106,7 @@ async function executeInSequence<Task, Result>(
 ) {
   const results: Result[] = [];
   async function run(i = 0): Promise<void> {
-    await (i === 0 ? Promise.resolve() : wait(pauseTime));
+    await wait(pauseTime);
 
     const result = await execute(tasks[i]);
     results.push(result);
